@@ -94,7 +94,29 @@
             if (valid) {
               // the successful code
               console.log('the successful code')
-              
+              this.axios({ url:"user/login",method:"post",data:this.form
+              }).then((resp)=>{
+                var resd=resp.data
+                if(resd==null||resd.length==0){
+                    //alert("该账户不存在，登录失败！")
+                   this.$message({ type: 'error',message: '该账户不存在，登录失败！', showClose: true });
+                }else{
+                  console.log(resd)
+                  //1.登录状态存储
+                   sessionStorage.setItem("uId",resd.id)
+                   sessionStorage.setItem("username",resd.username)
+                   sessionStorage.setItem("uType",resd.userType)
+                   //2.登录状态信息更新
+                   this.$store.dispatch('SetUserStatus',true)
+                   //保存Loginflag，目的是防止用户刷新页面，将isLogin恢复成false
+                   //增加这个字段，只需要判断Loginflag的值是否为isLogin,可以证明用户是否已登录
+                   sessionStorage.setItem("Loginflag","isLogin")
+                  //3.跳转到主页下一步操作
+                  this.$router.replace({ path: '/home'})
+                }
+              }).catch((resp)=>{
+                  console.log(resp)
+              })
             } else {
               console.log('Failed validation');
               return false;
