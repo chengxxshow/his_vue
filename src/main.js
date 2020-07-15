@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
      //1.用户进入其他页面，定向登录页
      console.log("*未登录*"+to.meta.isLogin)
      if(to.meta.isLogin==true){
-      next({path:"/login"})
+      next({path:"/"})
      }else{
        next()
      }

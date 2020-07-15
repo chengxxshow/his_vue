@@ -14,24 +14,85 @@
             </div>
         
         </el-header>
+
+        <el-container>
+           <el-aside width="200px">
+                <el-menu
+                  default-active="2"
+                  class="el-menu-vertical-demo"
+                  background-color="#545c64"
+                  text-color="#fff"
+                  active-text-color="#ffd04b"
+                  @select="addTab(editableTabsValue)">
+                  <el-submenu index="1">
+                    <template slot="title">
+                      <i class="el-icon-location"></i>
+                      <span  slot="title">挂号收费</span>
+                    </template>
+                    
+                      <el-menu-item index="1-1">现场挂号</el-menu-item>
+                      <el-menu-item index="1-2">收费</el-menu-item>
+                      <el-menu-item index="1-3">退费费</el-menu-item>
+                      <el-menu-item index="1-4">费用查询</el-menu-item>
+                  </el-submenu>
+                 
+                  <el-menu-item index="2">
+                    <i class="el-icon-menu"></i>
+                    <span slot="title">门诊医生</span>
+                  </el-menu-item>
+                  <el-menu-item index="3" >
+                    <i class="el-icon-document"></i>
+                    <span slot="title">医技医生</span>
+                  </el-menu-item>
+                  <el-menu-item index="4">
+                    <i class="el-icon-setting"></i>
+                    <span slot="title">药房管理</span>
+                  </el-menu-item>
+
+                  <el-submenu index="5">
+                    <template slot="title">
+                      <i class="el-icon-location"></i>
+                      <span  slot="title">系统管理</span>
+                    </template>
+                    
+                      <el-menu-item index="5-1">用户管理</el-menu-item>
+                      <el-menu-item index="5-2">科室管理</el-menu-item>
+                      <el-menu-item index="5-3">费用管理</el-menu-item>
+                      <el-menu-item index="5-4">菜单管理</el-menu-item>
+                      <el-menu-item index="5-5">权限管理</el-menu-item>
+                  </el-submenu>
+                </el-menu>
+           </el-aside>
+           <el-main>
+              <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+              <el-tab-pane
+                v-for="(item, index) in editableTabs"
+                :key="item.name"
+                :label="item.title"
+                :name="item.name"
+              >
+                {{item.content}}
+              </el-tab-pane>
+            </el-tabs>
+           </el-main>
+        </el-container>
         
-        <el-main>Main</el-main>
         <el-footer>Footer</el-footer>
 
-  <el-dialog title="个人信息" :visible.sync="dialogFormVisible">
-    <el-form :model="form">
-      <el-form-item label="用户名" :label-width="formLabelWidth">
-        <el-input v-model="form.name" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" :label-width="formLabelWidth">
-        <el-input v-model="form.psw" autocomplete="off"></el-input>
-      </el-form-item>
-    </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-    </div>
-  </el-dialog>   
+    <el-dialog title="个人信息" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="form.psw" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>   
 
 </el-container>
 
@@ -48,7 +109,20 @@ export default {
         name:"",
         psw:""
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      //有关tabs
+      editableTabsValue: '2',
+        editableTabs: [{
+          title: 'Tab 1',
+          name: '1',
+          content: 'Tab 1 content'
+        }, {
+          title: 'Tab 2',
+          name: '2',
+          content: 'Tab 2 content'
+        }],
+        tabIndex: 2
+      
     }
   },
   methods: {
@@ -86,6 +160,38 @@ export default {
           })
       }
 
+    },
+    //菜单更新tab
+      addTab(targetName) {
+        let newTabName = (++this.tabIndex)+ '';
+        this.editableTabs.push({
+          title: 'New Tab'+newTabName,
+          name: newTabName,
+          content: 'New Tab content'
+        });
+        this.editableTabsValue = newTabName;
+      },
+      removeTab(targetName) {
+        let tabs = this.editableTabs;
+        let activeName = this.editableTabsValue;
+        if (activeName === targetName) {
+          tabs.forEach((tab, index) => {
+            if (tab.name === targetName) {
+              let nextTab = tabs[index + 1] || tabs[index - 1];
+              if (nextTab) {
+                activeName = nextTab.name;
+              }
+            }
+          });
+        }
+        
+        this.editableTabsValue = activeName;
+        this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      },
+    
+    //tab页点击事件
+    showContent(tab,event){
+      console.log(tab,event)
     }
   }
   
@@ -113,7 +219,22 @@ export default {
   }
   
   .el-aside {
+    background-color: #D3DCE6;
     color: #333;
+    text-align: center;
+    line-height: 200px;
   }
-
+  
+  .el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    text-align: center;
+    line-height: 160px;
+  }
+  .el-footer {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+  }
 </style>
