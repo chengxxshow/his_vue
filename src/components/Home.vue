@@ -17,7 +17,7 @@
 
         <el-container>
            <el-aside width="200px">
-                <el-menu
+                <!-- <el-menu
                   default-active="2"
                   class="el-menu-vertical-demo"
                   background-color="#545c64"
@@ -32,7 +32,7 @@
                     
                       <el-menu-item index="1-1">现场挂号</el-menu-item>
                       <el-menu-item index="1-2">收费</el-menu-item>
-                      <el-menu-item index="1-3">退费费</el-menu-item>
+                      <el-menu-item index="1-3">退费</el-menu-item>
                       <el-menu-item index="1-4">费用查询</el-menu-item>
                   </el-submenu>
                  
@@ -61,19 +61,48 @@
                       <el-menu-item index="5-4">菜单管理</el-menu-item>
                       <el-menu-item index="5-5">权限管理</el-menu-item>
                   </el-submenu>
-                </el-menu>
+                </el-menu> -->
+             <el-menu
+                  default-active="2"
+                  class="el-menu-vertical-demo"
+                  background-color="#545c64"
+                  text-color="#fff"
+                  active-text-color="#ffd04b"
+                  @select="addTab">
+                <template v-for="(item,index) in this.$router.options.routes" v-if="!item.hidden">
+                  <el-submenu :index="index+''" :key="index" >
+                    <template slot="title">
+                      <i :class="item.iconCls"></i>
+                      <span  slot="title">{{item.name}}</span>
+                    </template>
+                     <!-- 一级菜单的子菜单 -->
+                     <el-menu-item  v-for="child in item.children" :index="child.path" :key="child.path">
+                        {{child.name}}
+                     </el-menu-item>
+                  </el-submenu>
+                
+                </template>  
+
+             
+         
+            </el-menu>
+
            </el-aside>
            <el-main>
-              <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+             <div style="background:pink;width:100%;height:400px;">
+              <el-tabs v-model="editableTabsValue" type="border-card" closable @edit="handleTabsEdit" @tab-click="showContent">
               <el-tab-pane
                 v-for="(item, index) in editableTabs"
                 :key="item.name"
                 :label="item.title"
                 :name="item.name"
+                :route="item.route"
               >
-                {{item.content}}
+                <router-view/>
               </el-tab-pane>
             </el-tabs>
+             </div>
+              
            </el-main>
         </el-container>
         
@@ -112,16 +141,8 @@ export default {
       formLabelWidth: '120px',
       //有关tabs
       editableTabsValue: '2',
-        editableTabs: [{
-          title: 'Tab 1',
-          name: '1',
-          content: 'Tab 1 content'
-        }, {
-          title: 'Tab 2',
-          name: '2',
-          content: 'Tab 2 content'
-        }],
-        tabIndex: 2
+      editableTabs: [],
+      tabIndex: 2
       
     }
   },
@@ -162,36 +183,68 @@ export default {
 
     },
     //菜单更新tab
-      addTab(targetName) {
-        let newTabName = (++this.tabIndex)+ '';
-        this.editableTabs.push({
-          title: 'New Tab'+newTabName,
-          name: newTabName,
-          content: 'New Tab content'
-        });
-        this.editableTabsValue = newTabName;
-      },
-      removeTab(targetName) {
-        let tabs = this.editableTabs;
-        let activeName = this.editableTabsValue;
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
-              if (nextTab) {
-                activeName = nextTab.name;
-              }
+      addTab(index) {
+        console.log(index)  //path
+        // let newTabName = (++this.tabIndex)+ '';
+        // this.editableTabs.push({
+        //   title: 'New Tab'+newTabName,
+        //   name: newTabName,
+        //   content: 'New Tab content'
+        // });
+        // this.editableTabsValue = newTabName;
+
+          if (index) {
+           let componet = this.findCompontByPath(index);
+            console.log(componet);
+          if (componet) {
+            if (!this.editableTabs.some(t => t.name == componet.path)) {
+              this.editableTabs.push({
+                title: componet.name,
+                name: componet.path,
+                route: componet.path
+              });
             }
-          });
+            this.editableTabsValue = componet.path;
+            this.$router.push(componet.path);
+          }
         }
-        
-        this.editableTabsValue = activeName;
-        this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      },
+      handleTabsEdit(targetName, action) {
+        if (action === 'remove') {
+          let tabs = this.editableTabs;
+          let activeName = this.editableTabsValue;
+          if (activeName === targetName) {
+            tabs.forEach((tab, index) => {
+              if (tab.name === targetName) {
+                let nextTab = tabs[index + 1] || tabs[index - 1];
+                if (nextTab) {
+                  activeName = nextTab.name;
+                }
+              }
+            });
+          }
+          
+          this.editableTabsValue = activeName;
+          this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+          this.$router.push(activeName)
+        }
       },
     
+    //自定义方法：通过路劲查找组件
+     findCompontByPath(path) {
+        for (let r of this.$router.options.routes) {
+          if (r.children) {
+            let a = r.children.find(c => c.path == path);
+            if (a) {
+              return a;
+            }
+          }
+        }
+        return null;
+      },
     //tab页点击事件
-    showContent(tab,event){
-      console.log(tab,event)
+    showContent(tag){
+     this.$router.push(tag.name)
     }
   }
   
