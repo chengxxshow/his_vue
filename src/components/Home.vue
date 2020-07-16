@@ -10,7 +10,7 @@
                     <el-dropdown-item command="logout">退出</el-dropdown-item>
                </el-dropdown-menu>
                 </el-dropdown>
-                <span>欢迎 {{username}}</span>
+                <span>欢迎 {{userName}}</span>
             </div>
         
         </el-header>
@@ -132,7 +132,7 @@ export default {
   name: 'Home',
   data () {
     return {
-      username: sessionStorage.getItem("username"),
+      userName: sessionStorage.getItem("userName"),
       dialogFormVisible: false,
       form:{
         name:"",
@@ -160,7 +160,7 @@ export default {
            this.axios("/user/logOut").then((resp)=>{
              //退出：清除sessionStorage  ，跳转到登录页面
               sessionStorage.removeItem("uId")
-              sessionStorage.removeItem("username")
+              sessionStorage.removeItem("userName")
               sessionStorage.removeItem("uType")
               sessionStorage.removeItem("Loginflag")
               this.$router.replace({path:"/"})
@@ -176,7 +176,7 @@ export default {
           var this_=this
           this.axios("/user/getUserById?id="+uid).then((resp)=>{
             console.log(this_.form,)
-            this_.form.name=resp.data.username
+            this_.form.name=resp.data.userName
             this_.form.psw=resp.data.password
           })
       }
@@ -282,7 +282,7 @@ export default {
     background-color: #E9EEF3;
     color: #333;
     text-align: center;
-    line-height: 160px;
+    /* line-height: 160px; */
   }
   .el-footer {
     background-color: #B3C0D1;

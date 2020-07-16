@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/user/*': {
-        target: 'http://localhost:8090', //domain name
+        target: 'http://localhost:8091', //domain name
         changeOrigin: true ,//support cross domain
         pathRewrite: {'^/user': '' } 
       }

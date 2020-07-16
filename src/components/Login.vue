@@ -22,8 +22,8 @@
     <el-col :span="12">
        <el-form ref="form" :rules="rules" :model="form" label-width="80px" class="login-form">
                 <h2 class="login-title">东软云his系统</h2>
-                <el-form-item label="用户名" prop="username">
-                  <el-input v-model="form.username"></el-input>
+                <el-form-item label="用户名" prop="userName">
+                  <el-input v-model="form.userName"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
                   <el-input v-model="form.password" show-password></el-input>
@@ -53,11 +53,11 @@
     data() {
       return {
         form: {
-          username: "",
+          userName: "",
           password: ""
         },
         rules: {
-          username: [
+          userName: [
             {required: true, message: "用户名不能为空", trigger: 'blur'},
             {min: 3, max: 10, message: "用户名3-10位", trigger: 'blur'}
           ],
@@ -104,7 +104,7 @@
                   console.log(resd)
                   //1.登录状态存储
                    sessionStorage.setItem("uId",resd.id)
-                   sessionStorage.setItem("username",resd.username)
+                   sessionStorage.setItem("userName",resd.userName)
                    sessionStorage.setItem("uType",resd.userType)
                    //2.登录状态信息更新
                    this.$store.dispatch('SetUserStatus',true)

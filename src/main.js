@@ -12,7 +12,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 
-axios.defaults.baseURL='http://localhost:8090'
+axios.defaults.baseURL='http://localhost:8091'
 axios.defaults.headers.post['Content-Type']='application/x-www-form-urlencoded'
 Vue.prototype.$axios=axios
 
