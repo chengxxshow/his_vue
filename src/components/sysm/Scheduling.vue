@@ -101,10 +101,13 @@
             </el-option>
         </el-select>
        <el-button type="primary" @click="getRules" size="mini" >查询排班规则</el-button>
-       <el-table  :data="rulestableData" stripe style="width: 100%">
-               <el-table-column prop="ID" label="编号"  width="50">  </el-table-column>
+       <el-table  :data="rulestableData" stripe style="width: 100%"  @selection-change="handleSelectionChange">
+               <el-table-column  type="selection"  width="50"> </el-table-column>
+                <el-table-column prop="ID" label="编号"  width="50">  </el-table-column>
                 <el-table-column prop="RuleName" label="规则名称" > </el-table-column>
                 <el-table-column  prop="deptname"  label="科室名称" ></el-table-column>
+                <el-table-column  prop="DeptID"  label="科室编号" v-if="false" ></el-table-column>
+                <el-table-column  prop="UserID"  label="医生编号" v-if="false" ></el-table-column>
                 <el-table-column prop="realname" label="医生名称"> </el-table-column>
                 <el-table-column prop="Week" label="午别"  width="180"> </el-table-column>
                 <el-table-column prop="DelMark" label="状态" :formatter="showStatus"> </el-table-column>
@@ -196,6 +199,8 @@
         rulestableData:[],
         addStartDate:'',
         addEndDate:'',
+        //被选中的排版规则列表项
+        multipleSelection: [],
       }
     },
     methods:{
@@ -246,8 +251,40 @@
 
           })
       },
+      //表格列表被选中时
+       handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
       //生成排班计划
       AddScheduling:function(){
+         //1.选中排班规则（至少位1项）multipleSelection.length>=1
+         //2.开始日期不为空 addStartDate!='' addEndDate!=''
+         if(this.multipleSelection.length<1){
+              this.$message({type:"error",message:"至少选中一项记录"})
+         }else if(this.addStartDate==null||this.addStartDate==''||this.addEndDate==null||this.addEndDate==''){
+              this.$message({type:"error",message:"开始日期或者结束日期不为空"})
+         }else{
+            console.log(this.multipleSelection)
+            //遍历被选择项，分别生成对应的排班计划
+            for(var i=0;i< this.multipleSelection.length;i++){
+                 var options={
+                              addStartDate:this.addStartDate,
+                              addEndDate:this.addEndDate,
+                              ruleId:this.multipleSelection[i].ID,
+                              deptId:this.multipleSelection[i].DeptID,
+                              UserID:this.multipleSelection[i].UserID,
+                              weeks:this.multipleSelection[i].Week
+                         }
+                 this.axios({url:"/neusys/scheduling/add",method:"post",data:options}).then((resp)=>{
+                    if(resp.data.status==200){
+                        this.$message({type:"success",message:resp.data.msg})
+                    }else{
+                        this.$message({type:"error",message:resp.data.msg})
+                    }
+                 })
+            }
+         }
+
 
       }
 
