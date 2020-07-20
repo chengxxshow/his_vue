@@ -17,7 +17,7 @@
        
        <el-main>
             <el-table  :data="tableData" stripe style="width: 100%">
-               <el-table-column prop="id" label="编号"  width="50">  </el-table-column>
+               <el-table-column prop="id" label="编号"  width="80">  </el-table-column>
                 <el-table-column prop="SchedDate" label="排班日期" width="180"> </el-table-column>
                 <el-table-column  prop="deptname"  label="科室名称"  width="180"></el-table-column>
                 <el-table-column prop="realName" label="医生名称"> </el-table-column>
@@ -281,6 +281,7 @@
                     }else{
                         this.$message({type:"error",message:resp.data.msg})
                     }
+                    this.dialogSearchFormVisible=false;
                  })
             }
          }
