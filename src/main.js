@@ -16,6 +16,8 @@ axios.defaults.baseURL='http://localhost:8091'
 axios.defaults.headers.post['Content-Type']='application/x-www-form-urlencoded'
 Vue.prototype.$axios=axios
 
+axios.defaults.withCredentials = true  //允许跨域携带cookie
+
 import Vuex from 'vuex'
 Vue.use(Vuex)
 

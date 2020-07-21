@@ -12,7 +12,13 @@ import  User from '@/components/sysm/User'
 import  Dept from '@/components/sysm/Dept'
 import  Scheduling from '@/components/sysm/Scheduling'
 Vue.use(Router)
-
+//解决tab页面Uncaught (in promise) Error: Avoided redundant navigation to current location:问题
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+  
+}
+///////////////////////////
 export default new Router({
   routes: [
     {
