@@ -201,7 +201,7 @@
    <font style="font-size:13px;font-family:'Microsoft YaHei'">病历本</font>
    
    <input type="checkbox" name=""  v-model="IsBook"  true-value="1" false-value="0" 
-        @change="" 
+        @change="ckBook" 
    />
   </div>
   </el-col>
@@ -231,7 +231,7 @@
 </el-row>
 <el-row >
     <el-col  :offset="6" :span="12"style="text-align:center">
-         <el-button type="primary" icon="el-icon-edit-outline" size="mini" style="margin-left: 3px" @click="">挂号
+         <el-button type="primary" icon="el-icon-edit-outline" size="mini" style="margin-left: 3px" @click="addRegister">挂号
         </el-button>
 
         <el-button type="primary" icon="el-icon-refresh" size="mini" style="margin-left: 3px" @click="">清空
@@ -322,6 +322,60 @@
            this.axios({url:"/neughsf/register/getAlreadyRegCount",method:"post",data:op}).then((resp)=>{
              this.yyhe=resp.data
            })
+       },
+       //是否要病历本
+       ckBook:function(){
+          if(this.IsBook==1){
+              this.Fee=parseFloat(this.Fee)+1
+          }else{
+            this.Fee=parseFloat(this.Fee)-1
+          }
+       },
+       //挂号提交
+       addRegister:function(){
+          //1.表单验证保证必填项有值
+           if(this.InvoiceNumber==null||this.InvoiceNumber==''
+              ||this.CaseNumber==null||this.CaseNumber==''
+              ||this.RealName==null||this.RealName==''
+              ||this.Gender===null||this.Gender==''
+              ||this.VisitDate===null||this.VisitDate==''
+              ||this.Noon===null||this.Noon==''
+              ||this.deptid===null||this.deptid==''
+              ||this.UserID===null||this.UserID==''
+              ||this.RegistLeID===null||this.RegistLeID==''
+              ||this.SettleID===null||this.SettleID==''
+           ){
+              this.$message({type:"error",message:"必填项不能为空"})
+           }else  if(this.cshe-this.yyhe<=0){
+               this.$message({type:"error",message:"该医生号额已挂号满"})
+           }else{
+               this.syhe=this.cshe-this.yyhe
+                //2.提交数据到后台
+                var fopitons={
+                  InvoiceNumber:this.InvoiceNumber,
+                  CaseNumber:this.CaseNumber,
+                  RealName:this.RealName,
+                  Gender:this.Gender,
+                  IDnumber:this.IDnumber,
+                  BirthDate:this.BirthDate,
+                  Age:this.Age,
+                  AgeType:this.AgeType,
+                  HomeAddress:this.HomeAddress,
+                  VisitDate:this.VisitDate,
+                  Noon:this.Noon,
+                  deptid:this.deptid,
+                  UserID:this.UserID,
+                  RegistLeID:this.RegistLeID,
+                  Fee:this.Fee,
+                  FeeType:this.FeeType,
+                  SettleID:this.SettleID,
+                  IsBook:this.IsBook
+                }
+                this.axios({url:"/neughsf/register/addRegister",method:"post",data:fopitons}).then((resp)=>{
+                    this.$message({type:"info",message:resp.data.msg})
+                })
+           }
+          
        }
     },
 
@@ -342,8 +396,6 @@
         RegistLeID: '',     //本次挂号级别ID',
         IsBook: '0',        //病历本要否',
         InvoiceNumber: '',  //发票号码',  
-        RegisterTime: '',   //挂号时间',
-        RegisterID: '',     //挂号员ID',
         Fee: '0',           //应收金额', 
         FeeType: 51,        //收费方式 51=现金 52=医保卡  
         SettleID: 1,        //结算类别ID', 1=自费 2=市医保
