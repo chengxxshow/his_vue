@@ -134,12 +134,12 @@
      <div class="grid-content bg-purple">
      <font color="red">*</font>
      <font style="font-size:13px;font-family:'Microsoft YaHei'">挂号科室:</font>&nbsp;
-     <el-select  placeholder="挂号科室" style="width: 108px" size="mini" v-model="DeptID" @change="">
+     <el-select  placeholder="挂号科室" style="width: 108px" size="mini" v-model="deptid" @change="select_regLevel">
          <el-option
                     v-for="item in scheduDept"
-                    :key="item.DeptID"
-                    :label="item.DeptName"
-                    :value="item.DeptID">
+                    :key="item.deptid"
+                    :label="item.deptname"
+                    :value="item.deptid">
           </el-option> 
      </el-select>
      </div>
@@ -151,12 +151,12 @@
      <font color="red">*</font>
      <font style="font-size:13px;font-family:'Microsoft YaHei'">号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别:</font>&nbsp;
      
-     <el-select  placeholder="号别" style="width: 100px" size="mini" v-model="RegistLeID" @change="">
+     <el-select  placeholder="号别" style="width: 100px" size="mini" v-model="RegistLeID" @change="select_doc">
           <el-option
-                    v-for="item in categories6"
-                    :key="item.did"
-                    :label="item.RegistName"
-                    :value="item.did">
+                    v-for="item in regLivels"
+                    :key="item.reglevid"
+                     :label="item.registname"
+                    :value="item.reglevid">
           </el-option> 
      </el-select>
      </div>
@@ -166,12 +166,12 @@
      <div class="grid-content bg-purple">
      <font color="red">*</font>
      <font style="font-size:13px;font-family:'Microsoft YaHei'">看诊医生:</font>
-     <el-select  placeholder="看诊医生" style="width: 110px" size="mini" v-model="UserID"  @change="">
+     <el-select  placeholder="看诊医生" style="width: 110px" size="mini" v-model="UserID"  @change="select_quota">
          <el-option
-                    v-for="item in categories8"
-                    :key="item.ID"
-                    :label="item.RealName"
-                    :value="item.ID">
+                    v-for="item in schedulingdocList"
+                    :key="item.docid"
+                    :label="item.realname"
+                    :value="item.docid">
           </el-option> 
      </el-select>
      </div>
@@ -276,10 +276,49 @@
                visitDate:this.VisitDate,
                noon:this.Noon
            }
-           this.axios.post('/neusys/scheduling/getDeptByVDateAndNoon',op).then((resp)=>{
-            this.scheduDept=resp.data.list
+            console.log("传参数据："+op)
+           this.axios({url:"/neusys/scheduling/getDeptByVDateAndNoon",method:"post",data:op}).then((resp)=>{
+             console.log("值班科室："+resp.data.list)
+             this.scheduDept=resp.data.list
            })
        },
+       select_regLevel:function(){
+           //根据看诊日期,午别,科室 查询号别
+           var op={
+               visitDate:this.VisitDate,
+               noon:this.Noon,
+               deptId:this.deptid
+           }
+           this.axios({url:"/neusys/scheduling/getRegLevlByDateNoonDept",method:"post",data:op}).then((resp)=>{
+             console.log("值班值班号别"+resp.data.list)
+             this.regLivels=resp.data.list
+           })
+       },
+       select_doc:function(){
+          //根据看诊日期,午别,科室 ,号别 查询 医生
+           var op={
+               visitDate:this.VisitDate,
+               noon:this.Noon,
+               deptId:this.deptid,
+               reglevid:this.RegistLeID
+           }
+           this.axios({url:"/neusys/scheduling/getDocByDateNoonDeptRegid",method:"post",data:op}).then((resp)=>{
+             console.log("值班医生"+resp.data.list)
+             this.schedulingdocList=resp.data.list
+           })
+       },
+       select_quota:function(){
+          //根据日期 午别  医生 查询 限号额度和挂号费
+           var op={
+               visitDate:this.VisitDate,
+               noon:this.Noon,
+               userId:this.UserID
+           }
+           this.axios({url:"/neusys/scheduling/getDocRegQuotaByDateNoon",method:"post",data:op}).then((resp)=>{
+             this.cshe=resp.data.registquota
+             this.Fee=resp.data.registfee
+           })
+       }
     },
 
     data(){
@@ -294,7 +333,7 @@
         HomeAddress: '',    //家庭住址',
         VisitDate: '',      //本次看诊日期', 2019-2-1 ???
         Noon: '',           //午别', 
-        DeptID: '',         //本次挂号科室ID',
+        deptid: '',         //本次挂号科室ID',
         UserID: '',         //本次挂号医生ID',
         RegistLeID: '',     //本次挂号级别ID',
         IsBook: '0',        //病历本要否',
@@ -313,9 +352,9 @@
         FeeList: [],   //收费方式列表
         settleCategories: [],  //结算类型列表
         noons: [{Noon:'上午'},{Noon:'下午'}],  //午别列表
-        categories6: [],
+        regLivels: [],  //值班号别
         scheduDept: [],  //挂号科室=值班科室
-        categories8: [],
+        schedulingdocList: [],
       }
     }
   }
