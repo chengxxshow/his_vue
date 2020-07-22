@@ -318,6 +318,10 @@
              this.cshe=resp.data.registquota
              this.Fee=resp.data.registfee
            })
+          //根据 日期 午别 医生 查询已挂号患者数量（已用号额）
+           this.axios({url:"/neughsf/register/getAlreadyRegCount",method:"post",data:op}).then((resp)=>{
+             this.yyhe=resp.data
+           })
        }
     },
 
