@@ -11,6 +11,8 @@ import SignOut from '@/components/ghsf/SignOut'
 import  User from '@/components/sysm/User'
 import  Dept from '@/components/sysm/Dept'
 import  Scheduling from '@/components/sysm/Scheduling'
+//门诊医生站
+import  DHome from '@/components/doc/DHome'
 Vue.use(Router)
 //解决tab页面Uncaught (in promise) Error: Avoided redundant navigation to current location:问题
 const originalPush = Router.prototype.push
@@ -120,5 +122,18 @@ export default new Router({
   ]
 
   },
+  {  
+      path:"/home",
+      name:'门诊医生站',
+      iconCls:'el-icon-first-aid-kit',
+      component: Home,
+      children:[{
+          path:"/dHOME",
+          name:"门诊病例首页",
+          component:DHome,
+          meta:{isLogin:true,keepAlive:false}
+      },
+    ]
+    }
   ]
 })
