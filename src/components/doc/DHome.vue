@@ -97,7 +97,11 @@ export default {
             s2="女"
         }
         this.checkedPatientStop="就诊状态："+s1+" 病历号："+val.casenumber+" 姓名："+val.realname+" 性别："+s2+" 年龄："+val.age+val.agetype
-      },
+        //父组件给子组件传值 2（vuex，sessionStorage）
+         this.$store.state.Register=val;
+        // sessionStorage.setItem("casenumber",val.casenumber)
+        //  sessionStorage.setItem("rid",val.id)
+     },
     },
     mounted: function () {//页面加载调用
        var  docid=sessionStorage.getItem("uId")
